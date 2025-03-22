@@ -1,0 +1,37 @@
+services:
+  accounts:
+    image: "adityasrivastva/acc-s4:latest"
+    container_name: accounts-ms-s4
+    ports:
+      - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - adityasrivastva
+  loans:
+    image: "adityasrivastva/cards:s4"
+    container_name: loans-ms-s4
+    ports:
+      - "8090:8090"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - adityasrivastva
+  cards:
+    image: "adityasrivastva/cards:s4"
+    container_name: cards-ms-s4
+    ports:
+      - "9000:9000"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - adityasrivastva
+networks:
+  adityasrivastva:
+    driver: "bridge"
