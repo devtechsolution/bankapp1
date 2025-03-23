@@ -1,0 +1,11 @@
+build:
+  version: "1.0"
+
+accounts:
+  message: "Welcome to Bankapp accounts related prod APIs "
+  contactDetails:
+    name: "Shankar S - Product Owner"
+    email: "shankar@devbank.com"
+  onCallSupport:
+    - (111) 234-1234
+    - (222) 456-1345
