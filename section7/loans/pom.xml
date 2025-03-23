@@ -107,7 +107,7 @@
 				<configuration>
 
 					<to>
-						<image>adityasrivastva/${project.artifactId}:s6</image>
+						<image>adityasrivastva/${project.artifactId}:s7</image>
 					</to>
 				</configuration>
 			</plugin>
