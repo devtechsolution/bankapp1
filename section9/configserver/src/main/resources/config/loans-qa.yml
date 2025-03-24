@@ -1,0 +1,11 @@
+build:
+  version: "2.0"
+
+loans:
+  message: "Welcome to Bankapp loans related QA APIs "
+  contactDetails:
+    name: "Lakhsmi - QA Lead"
+    email: "lakhsmi@devbank.com"
+  onCallSupport:
+    - (111) 234-1234
+    - (222) 456-1345
