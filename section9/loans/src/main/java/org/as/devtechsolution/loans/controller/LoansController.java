@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.*;
 public class LoansController {
     private static final Logger logger = LoggerFactory.getLogger(LoansController.class);
 
+    @Autowired
     private final ILoansService iLoansService;
 
     public LoansController(final ILoansService iLoansService) {
