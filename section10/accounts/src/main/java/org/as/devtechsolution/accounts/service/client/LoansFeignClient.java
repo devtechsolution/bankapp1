@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author Aditya Srivastva
  */
 
-@FeignClient("loans")
+@FeignClient(name = "loans", fallback = LoansFallback.class)
 public interface LoansFeignClient {
 
 
