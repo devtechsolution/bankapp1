@@ -56,4 +56,10 @@ info:
     description: "Bankapp Cards Application"
     version: "1.0.0"
 
+logging:
+  level:
+    org:
+      as:
+        devtechsolution:
+          cards: "DEBUG"
 

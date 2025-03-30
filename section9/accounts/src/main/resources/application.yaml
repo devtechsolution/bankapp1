@@ -56,4 +56,11 @@ info:
     description: "Bankapp Accounts Application"
     version: "1.0.0"
 
+logging:
+  level:
+    org:
+      as:
+        devtechsolution:
+          accounts: "DEBUG"
+
 

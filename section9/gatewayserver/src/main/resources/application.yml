@@ -25,10 +25,16 @@ management:
 
 
 
+
 info:
   app:
     name: "gatewayserver"
     description: "Bankapp Gateway Server Application"
     version: "1.0.0"
-
+logging:
+  level:
+    org:
+      as:
+        devtechsolution:
+          gatewayserver: "DEBUG"
 
