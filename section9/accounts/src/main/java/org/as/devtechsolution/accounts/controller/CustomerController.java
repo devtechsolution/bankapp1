@@ -11,13 +11,12 @@ import org.apache.http.HttpStatus;
 import org.as.devtechsolution.accounts.dto.CustomerDetailsDto;
 import org.as.devtechsolution.accounts.dto.ErrorResponseDto;
 import org.as.devtechsolution.accounts.service.ICustomersService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Aditya Srivastva
@@ -32,6 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
         description = "REST APIs in Bankapp to FETCH customer details"
 )
 public class CustomerController {
+
+    private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
 
     private final ICustomersService customersService;
 
@@ -58,10 +59,15 @@ public class CustomerController {
     }
     )
     @GetMapping("/customerDetails")
-    public ResponseEntity<CustomerDetailsDto> fetchCustomerDetails(@RequestParam
-                                                                   @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
-                                                                   String mobileNumber){
-        CustomerDetailsDto customerDetailsDto = customersService.fetchCustomerDetails(mobileNumber);
+    public ResponseEntity<CustomerDetailsDto> fetchCustomerDetails(
+            @RequestHeader("bankapp-correlation-id")
+            String correlationId,
+            @RequestParam
+            @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
+           String mobileNumber){
+        logger.debug("bankapp-correlation-id found: {} ", correlationId);
+        CustomerDetailsDto customerDetailsDto = customersService
+                .fetchCustomerDetails(mobileNumber,correlationId);
         return ResponseEntity.status(HttpStatus.SC_OK).body(customerDetailsDto);
 
     }
