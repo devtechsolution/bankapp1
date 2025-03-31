@@ -95,5 +95,11 @@ resilience4j:
           - java.lang.NullPointerException
         retry-exceptions:
           - java.util.concurrent.TimeoutException
+  ratelimiter:
+    configs:
+      default:
+        limit-for-period: 1
+        limit-refresh-period: 5000
+        timeout-duration: 1000
 
 
