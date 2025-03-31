@@ -1,58 +1,71 @@
 services:
-#  accountsdb:
-#    container_name: accountsdb
-#    ports:
-#      - 3306:3306
-#    environment:
-#      MYSQL_DATABASE: accountsdb
-#    extends:
-#      file: common-config.yml
-#      service: microservice-db-config
-#
-#  loansdb:
-#    container_name: loansdb
-#    ports:
-#      - 3307:3306
-#    environment:
-#      MYSQL_DATABASE: loansdb
-#    extends:
-#      file: common-config.yml
-#      service: microservice-db-config
-#
-#  cardsdb:
-#    container_name: cardsdb
-#    ports:
-#      - 3308:3306
-#    environment:
-#      MYSQL_DATABASE: cardsdb
-#    extends:
-#      file: common-config.yml
-#      service: microservice-db-config
+  #  accountsdb:
+  #    container_name: accountsdb
+  #    ports:
+  #      - 3306:3306
+  #    environment:
+  #      MYSQL_DATABASE: accountsdb
+  #    extends:
+  #      file: common-config.yml
+  #      service: microservice-db-config
+  #
+  #  loansdb:
+  #    container_name: loansdb
+  #    ports:
+  #      - 3307:3306
+  #    environment:
+  #      MYSQL_DATABASE: loansdb
+  #    extends:
+  #      file: common-config.yml
+  #      service: microservice-db-config
+  #
+  #  cardsdb:
+  #    container_name: cardsdb
+  #    ports:
+  #      - 3308:3306
+  #    environment:
+  #      MYSQL_DATABASE: cardsdb
+  #    extends:
+  #      file: common-config.yml
+  #      service: microservice-db-config
 
-#  rabbit:
-#    image: rabbitmq:4.0-management
-#    hostname: rabbitmq
-#    ports:
-#      - "5672:5672"
-#      - "15672:15672"
-#    healthcheck:
-#      test: rabbitmq-diagnostics check_port_connectivity
-#      interval: 10s
-#      timeout: 5s
-#      retries: 10
-#      start_period: 10s
-#    extends:
-#      file: common-config.yml
-#      service: network-deploy-service
+  #  rabbit:
+  #    image: rabbitmq:4.0-management
+  #    hostname: rabbitmq
+  #    ports:
+  #      - "5672:5672"
+  #      - "15672:15672"
+  #    healthcheck:
+  #      test: rabbitmq-diagnostics check_port_connectivity
+  #      interval: 10s
+  #      timeout: 5s
+  #      retries: 10
+  #      start_period: 10s
+  #    extends:
+  #      file: common-config.yml
+  #      service: network-deploy-service
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]
+      timeout: 10s
+      retries: 10
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
 
   configserver:
-    image: "adityasrivastva/configserver:s9"
+    image: "adityasrivastva/configserver:s10"
     container_name: configserver-ms
     ports:
       - "8071:8071"
-#    depends_on:
-#      rabbit:
-#        condition: service_healthy
+    #    depends_on:
+    #      rabbit:
+    #        condition: service_healthy
     healthcheck:
       test: "curl --fail --silent http://localhost:8071/actuator/health/readiness | grep UP || exit 1"
       interval: 10s
@@ -64,7 +77,7 @@ services:
       service: microservice-base-config
 
   eurekaserver:
-    image: "adityasrivastva/discoveryservice:s9"
+    image: "adityasrivastva/discoveryservice:s10"
     container_name: eurekaserver-ms
     ports:
       - "8070:8070"
@@ -84,15 +97,15 @@ services:
       SPRING_APPLICATION_NAME: "eurekaserver"
 
   accounts:
-    image: "adityasrivastva/accounts:s9"
+    image: "adityasrivastva/accounts:s10"
     container_name: accounts-ms
     ports:
       - "8080:8080"
     depends_on:
       configserver:
         condition: service_healthy
-#      accountsdb:
-#        condition: service_healthy
+      #      accountsdb:
+      #        condition: service_healthy
       eurekaserver:
         condition: service_healthy
     healthcheck:
@@ -103,7 +116,7 @@ services:
       start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: "accounts"
-#      SPRING_DATASOURCE_URL: "jdbc:mysql://accountsdb:3306/accountsdb"
+    #      SPRING_DATASOURCE_URL: "jdbc:mysql://accountsdb:3306/accountsdb"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -111,13 +124,13 @@ services:
 
 
   loans:
-    image: "adityasrivastva/loans:s9"
+    image: "adityasrivastva/loans:s10"
     container_name: loans-ms
     ports:
       - "8082:8082"
     depends_on:
-#      loansdb:
-#        condition: service_healthy
+      #      loansdb:
+      #        condition: service_healthy
       configserver:
         condition: service_healthy
       eurekaserver:
@@ -130,21 +143,21 @@ services:
       start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: "loans"
-#      SPRING_DATASOURCE_URL: "jdbc:mysql://loansdb:3306/loansdb"
+    #      SPRING_DATASOURCE_URL: "jdbc:mysql://loansdb:3306/loansdb"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   cards:
-    image: "adityasrivastva/cards:s9"
+    image: "adityasrivastva/cards:s10"
     container_name: cards-ms
     ports:
       - "8081:8081"
     depends_on:
       configserver:
         condition: service_healthy
-#      cardsdb:
-#        condition: service_healthy
+      #      cardsdb:
+      #        condition: service_healthy
       eurekaserver:
         condition: service_healthy
     healthcheck:
@@ -155,13 +168,13 @@ services:
       start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: "cards"
-#      SPRING_DATASOURCE_URL: "jdbc:mysql://cardsdb:3306/cardsdb"
+    #      SPRING_DATASOURCE_URL: "jdbc:mysql://cardsdb:3306/cardsdb"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   gatewayserver:
-    image: "adityasrivastva/gatewayserver:s9"
+    image: "adityasrivastva/gatewayserver:s10"
     container_name: gatewayserver-ms
     ports:
       - "8072:8072"
@@ -172,8 +185,14 @@ services:
         condition: service_healthy
       cards:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
-      SPRING_APPLICATION_NAME: "gatewayserver "
+      SPRING_APPLICATION_NAME: "gatewayserver"
+      SPRING_DATA_REDIS_CONNECT-TIMEOUT: 2s
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_TIMEOUT: 1s
     extends:
       file: common-config.yml
       service: microservice-eureka-config
