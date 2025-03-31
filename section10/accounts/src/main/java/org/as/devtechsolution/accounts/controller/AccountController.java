@@ -1,5 +1,6 @@
 package org.as.devtechsolution.accounts.controller;
 
+import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,6 +16,8 @@ import org.as.devtechsolution.accounts.dto.CustomerDto;
 import org.as.devtechsolution.accounts.dto.ErrorResponseDto;
 import org.as.devtechsolution.accounts.dto.ResponseDto;
 import org.as.devtechsolution.accounts.service.IAccountsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -37,6 +40,9 @@ import org.springframework.web.bind.annotation.*;
         description = "CRUD REST APIs in Bankapp to CREATE, UPDATE, FETCH AND DELETE account details"
 )
 public class AccountController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
+
 
     private final IAccountsService iAccountsService;
 
@@ -197,11 +203,21 @@ public class AccountController {
             )
     }
     )
+    @Retry(name = "getBuildInfo", fallbackMethod = "getBuildInfoFallback")
     @GetMapping("/build-info")
     public ResponseEntity<String> getBuildInfo() {
+        logger.debug("getBuildInfo() method invoked");
+        //throw new NullPointerException();
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(buildVersion);
+    }
+
+    public ResponseEntity<String> getBuildInfoFallback(Throwable throwable) {
+        logger.debug("getBuildInfoFallback() method invoked");
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("0.9");
     }
 
     @Operation(
