@@ -1,0 +1,11 @@
+build:
+  version: "1.0"
+
+cards:
+  message: "Welcome to Bankapp cards related prod APIs "
+  contactDetails:
+    name: "Brahma S - Product Owner"
+    email: "brahma@devbank.com"
+  onCallSupport:
+    - (111) 234-1234
+    - (222) 456-1345
