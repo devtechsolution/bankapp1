@@ -1,0 +1,11 @@
+build:
+  version: "3.0"
+
+loans:
+  message: "Welcome to bankapp loans related local APIs "
+  contactDetails:
+    name: "Ajeet - Developer"
+    email: "ajeet@banker.com"
+  onCallSupport:
+    - (452) 456-2176
+    - (546) 764-8934

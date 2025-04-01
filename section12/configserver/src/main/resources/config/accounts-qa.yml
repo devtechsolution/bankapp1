@@ -1,0 +1,11 @@
+build:
+  version: "2.0"
+
+accounts:
+  message: "Welcome to Bankapp accounts related QA APIs "
+  contactDetails:
+    name: "Ram - QA Lead"
+    email: "ram@devbank.com"
+  onCallSupport:
+    - (111) 234-1234
+    - (222) 456-1345
