@@ -1,0 +1,11 @@
+build:
+  version: "1.0"
+
+loans:
+  message: "Welcome to Bankapp loans related prod APIs "
+  contactDetails:
+    name: "Saraswati S - Product Owner"
+    email: "saraswati@devbank.com"
+  onCallSupport:
+    - (111) 234-1234
+    - (222) 456-1345
