@@ -57,6 +57,20 @@ services:
 #      file: common-config.yml
 #      service: network-deploy-service
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1.4
+    container_name: keycloak
+    ports:
+      - 7080:8080
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command:
+      - "start-dev"
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
   read:
     image: grafana/loki:3.1.2
     command: "-config.file=/etc/loki/config.yaml -target=read"
@@ -112,7 +126,7 @@ services:
       service: network-deploy-service
 
   minio:
-    image: minio/minio:RELEASE.2024-12-18T13-15-44Z
+    image: minio/minio
     entrypoint:
       - sh
       - -euc
@@ -276,7 +290,7 @@ services:
 
 
   configserver:
-    image: "adityasrivastva/configserver:s11"
+    image: "adityasrivastva/configserver:s12"
     container_name: configserver-ms
     ports:
       - "8071:8071"
@@ -296,7 +310,7 @@ services:
       OTEL_SERVICE_NAME: "configserver"
 
   eurekaserver:
-    image: "adityasrivastva/discoveryservice:s11"
+    image: "adityasrivastva/discoveryservice:s12"
     container_name: eurekaserver-ms
     ports:
       - "8070:8070"
@@ -317,10 +331,10 @@ services:
       OTEL_SERVICE_NAME: "eurekaserver"
 
   accounts:
-    image: "adityasrivastva/accounts:s11"
+    image: "adityasrivastva/accounts:s12"
     container_name: accounts-ms
-    ports:
-      - "8080:8080"
+#    ports:
+#      - "8080:8080"
     depends_on:
       configserver:
         condition: service_healthy
@@ -345,10 +359,10 @@ services:
 
 
   loans:
-    image: "adityasrivastva/loans:s11"
+    image: "adityasrivastva/loans:s12"
     container_name: loans-ms
-    ports:
-      - "8082:8082"
+#    ports:
+#      - "8082:8082"
     depends_on:
       #      loansdb:
       #        condition: service_healthy
@@ -371,10 +385,10 @@ services:
       service: microservice-eureka-config
 
   cards:
-    image: "adityasrivastva/cards:s11"
+    image: "adityasrivastva/cards:s12"
     container_name: cards-ms
-    ports:
-      - "8081:8081"
+#    ports:
+#      - "8081:8081"
     depends_on:
       configserver:
         condition: service_healthy
@@ -397,7 +411,7 @@ services:
       service: microservice-eureka-config
 
   gatewayserver:
-    image: "adityasrivastva/gatewayserver:s11"
+    image: "adityasrivastva/gatewayserver:s12"
     container_name: gatewayserver-ms
     ports:
       - "8072:8072"
@@ -417,6 +431,7 @@ services:
 #      SPRING_DATA_REDIS_HOST: redis
 #      SPRING_DATA_REDIS_PORT: 6379
 #      SPRING_DATA_REDIS_TIMEOUT: 1s
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: "http://keycloak:8080/realms/master/protocol/openid-connect/certs"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
