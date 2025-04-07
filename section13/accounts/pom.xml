@@ -104,6 +104,14 @@
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.4.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-stream</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-stream-binder-rabbit</artifactId>
+		</dependency>
 
 	</dependencies>
 
@@ -141,7 +149,7 @@
 				<configuration>
 
 					<to>
-						<image>adityasrivastva/${project.artifactId}:s12</image>
+						<image>adityasrivastva/${project.artifactId}:s13</image>
 					</to>
 				</configuration>
 			</plugin>

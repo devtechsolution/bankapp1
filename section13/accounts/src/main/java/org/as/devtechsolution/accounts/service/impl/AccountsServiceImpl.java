@@ -2,6 +2,7 @@ package org.as.devtechsolution.accounts.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.as.devtechsolution.accounts.constant.AccountsConstants;
+import org.as.devtechsolution.accounts.dto.AccountMsgDto;
 import org.as.devtechsolution.accounts.dto.AccountsDto;
 import org.as.devtechsolution.accounts.dto.CustomerDto;
 import org.as.devtechsolution.accounts.entity.Accounts;
@@ -13,10 +14,14 @@ import org.as.devtechsolution.accounts.mapper.CustomerMapper;
 import org.as.devtechsolution.accounts.repository.AccountsRepository;
 import org.as.devtechsolution.accounts.repository.CustomerRepository;
 import org.as.devtechsolution.accounts.service.IAccountsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Random;
+
 
 /**
  * @author Aditya Srivastva on 04-02-2024
@@ -26,14 +31,20 @@ import java.util.Random;
 @AllArgsConstructor
 public class AccountsServiceImpl implements IAccountsService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AccountsServiceImpl.class);
+
+
     private AccountsRepository accountsRepository;
     private CustomerRepository customerRepository;
+    private final StreamBridge streamBridge;
+
 
     /**
      * @param customerDto - CustomerDto Object
      */
     @Override
     public void createAccount(final CustomerDto customerDto) {
+
 
         final var byMobileNumber = customerRepository.findByMobileNumber(customerDto.getMobileNumber());
         if(byMobileNumber.isPresent()){
@@ -44,10 +55,19 @@ public class AccountsServiceImpl implements IAccountsService {
         /*customer.setCreatedAt(LocalDateTime.now());
         customer.setCreatedBy("Aditya");*/
         final var savedCustomer = customerRepository.save(customer);
-        accountsRepository.save(createNewAccount(savedCustomer));
+        Accounts savedAccount = accountsRepository.save(createNewAccount(savedCustomer));
+        sendCommunication(savedAccount, savedCustomer);
 
 
 
+    }
+
+    private void sendCommunication(Accounts accounts, Customer customer) {
+        var accountMsgDto = new AccountMsgDto(accounts.getAccountNumber(), customer.getName(),
+                customer.getEmail(), customer.getMobileNumber());
+        logger.info("Sending Communication request for the details {}", accountMsgDto);
+        var result= streamBridge.send("sendCommunication-out-0", accountMsgDto);
+        logger.info("Is the communication sent successfully triggered?: {}", result);
     }
 
     /**
@@ -122,5 +142,22 @@ public class AccountsServiceImpl implements IAccountsService {
         accountsRepository.deleteByCustomerId(customer.getCustomerId());
         customerRepository.deleteById(customer.getCustomerId());
         return true;
+    }
+
+    @Override
+    public boolean updateCommunicationStatus(Long accountNumber) {
+
+        boolean isUpdated = false;
+        if(accountNumber != null){
+            Accounts accounts = accountsRepository.findById(accountNumber).orElseThrow(
+                    () -> new ResourceNotFoundException("Account", "AccountNumber", accountNumber.toString())
+            );
+            //accounts.setCommunicationSw(!accounts.getCommunicationSw());
+            accounts.setCommunicationSw(true);
+            accountsRepository.save(accounts);
+            isUpdated = true;
+        }
+
+        return isUpdated;
     }
 }
