@@ -76,7 +76,7 @@
 				<version>3.4.5</version>
 				<configuration>
 					<to>
-						<image>adityasrivastva/${project.artifactId}:s13</image>
+						<image>adityasrivastva/${project.artifactId}:s14</image>
 					</to>
 				</configuration>
 			</plugin>
