@@ -57,6 +57,22 @@ services:
 #      file: common-config.yml
 #      service: network-deploy-service
 
+  rabbit:
+    image: rabbitmq:4.0-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.4
     container_name: keycloak
@@ -290,7 +306,7 @@ services:
 
 
   configserver:
-    image: "adityasrivastva/configserver:s12"
+    image: "adityasrivastva/configserver:s13"
     container_name: configserver-ms
     ports:
       - "8071:8071"
@@ -310,7 +326,7 @@ services:
       OTEL_SERVICE_NAME: "configserver"
 
   eurekaserver:
-    image: "adityasrivastva/discoveryservice:s12"
+    image: "adityasrivastva/discoveryservice:s13"
     container_name: eurekaserver-ms
     ports:
       - "8070:8070"
@@ -331,7 +347,7 @@ services:
       OTEL_SERVICE_NAME: "eurekaserver"
 
   accounts:
-    image: "adityasrivastva/accounts:s12"
+    image: "adityasrivastva/accounts:s13"
     container_name: accounts-ms
 #    ports:
 #      - "8080:8080"
@@ -341,6 +357,8 @@ services:
       #      accountsdb:
       #        condition: service_healthy
       eurekaserver:
+        condition: service_healthy
+      rabbit:
         condition: service_healthy
     healthcheck:
       test: "curl --fail --silent localhost:8080/actuator/health/readiness | grep UP || exit 1"
@@ -352,6 +370,7 @@ services:
       SPRING_APPLICATION_NAME: "accounts"
       OTEL_SERVICE_NAME: "accounts"
     #      SPRING_DATASOURCE_URL: "jdbc:mysql://accountsdb:3306/accountsdb"
+      SPRING_RABBITMQ_HOST: "rabbit"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -359,7 +378,7 @@ services:
 
 
   loans:
-    image: "adityasrivastva/loans:s12"
+    image: "adityasrivastva/loans:s13"
     container_name: loans-ms
 #    ports:
 #      - "8082:8082"
@@ -385,7 +404,7 @@ services:
       service: microservice-eureka-config
 
   cards:
-    image: "adityasrivastva/cards:s12"
+    image: "adityasrivastva/cards:s13"
     container_name: cards-ms
 #    ports:
 #      - "8081:8081"
@@ -410,8 +429,20 @@ services:
       file: common-config.yml
       service: microservice-eureka-config
 
+  message:
+    image: "adityasrivastva/message:s13"
+    container_name: message-ms
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    environment:
+      SPRING_RABBITMQ_HOST: "rabbit"
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
   gatewayserver:
-    image: "adityasrivastva/gatewayserver:s12"
+    image: "adityasrivastva/gatewayserver:s13"
     container_name: gatewayserver-ms
     ports:
       - "8072:8072"
@@ -435,6 +466,8 @@ services:
     extends:
       file: common-config.yml
       service: microservice-eureka-config
+
+
 
 networks:
   adityasrivastva:
