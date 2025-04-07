@@ -1,0 +1,11 @@
+build:
+  version: "2.0"
+
+cards:
+  message: "Welcome to Bankapp cards related QA APIs "
+  contactDetails:
+    name: "Vishnu - QA Lead"
+    email: "vishnu@devbank.com"
+  onCallSupport:
+    - (111) 234-1234
+    - (222) 456-1345
